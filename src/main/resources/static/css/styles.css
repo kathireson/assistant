@@ -1,0 +1,146 @@
+ body{
+     font-family: 'Roboto',sans-serif;
+     background-color: beige;
+ }
+ .banner {
+ 	display: flex;
+ 	justify-content: space-between;
+     margin: -10px;
+     background-color: #4c525c;
+     color: white;
+     padding: 10px 10px 10px 30px;
+     font-family: 'Roboto',sans-serif;
+     font-size: 30px;
+     font-weight: 400;
+ }
+ .commonControls {
+ 	display: flex;
+ 	align-items: center;
+ 	justify-content: space-between;
+ 	min-width: 60px;
+ }
+ .day {
+     margin: 35px;
+ }
+ .dayReport{
+	margin: 10px;
+ }
+ .dayReport .MuiTableCell-body {
+ 	font-size:14px;
+ }
+ .dayReport .MuiTableCell-head {
+ 	font-size:16px;
+ 	background-color: #fefefa;
+ 	color: #4c525c;
+ }
+ .collapsibleDetail{
+ 	padding: 10px;
+ 	margin: 3px;
+ 	background-color: beige;
+ 	border-radius: 5px;
+ }
+ .dayHeader{
+ 	display: flex;
+ 	flex-direction: row;
+    border-bottom: 1px solid #d5e2e3;
+ }
+ .taskDate {
+     font-weight: 100;
+     padding: 5px;
+ }
+ .taskForm {
+ 	background-color: beige;
+ 	display: flex;
+ 	flex-direction: column;
+ 	justify-content: space-around;
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) !important;
+    padding: 5px;
+    border-radius: 5px;
+ }
+ 
+ .formButtons{
+ 	display: flex;
+ 	justify-content: space-evenly;
+ 	padding: 10px;
+ }
+ 
+ .taskContainer{
+     display: flex;
+     flex-direction: column;
+     margin: 5px;
+     list-style-type: none;
+ }
+ .task {
+     padding: 10px;
+     margin: 5px;
+     background-color: white;
+     border-radius: 10px;
+     max-width: 500px;
+     border-bottom: 2px solid #d5e2e3;
+ }
+ .task-current {
+     padding: 10px;
+     margin: 5px;
+     background-color: #cefac8;
+     border-radius: 10px;
+     max-width: 500px;
+     border-bottom: 2px solid #779473;
+ }
+ .task-attention {
+     padding: 10px;
+     margin: 5px;
+     background-color: #ffc7c7;
+     border-radius: 10px;
+     max-width: 400px;
+     border-bottom: 2px solid #a37979;
+ }
+ .taskTitle {
+     font-size: 25px;
+     font-weight: 500;
+     padding: 0px 0px 10px 0px;
+     margin: 0px;
+ }
+ .taskDetails {
+     padding: 5px;
+     display: flex;
+     justify-content: space-between;
+ }
+ .taskQuickEdit {
+ 	display: flex;
+ 	justify-content: flex-end;
+ 	min-width: 200px;
+ }
+ .taskQuickEdit a:link, a:visited {
+ 
+  color: black;
+  text-decoration: none;
+}
+
+.taskQuickEdit a:hover, a:active {
+  background-color: #4c525c;
+  color: white;
+  text-decoration: none;
+}
+ 
+ .taskDesc {
+     font-weight: 200;
+     display: flex;
+     justify-content: space-between;
+     color: #4c525c;
+ }
+ .taskStatus{
+ 	color: #bf8f90;
+ 	padding: 0px 20px 0px 0px;
+ }
+ .task-attention .button {
+     background-color: #007bff;
+     color: #fff;
+     border-color: #007bff;
+     border-radius: 5px;
+     padding: 5px;
+     font-family: 'Roboto', sans-serif;
+     font-size: 15px;
+ }
