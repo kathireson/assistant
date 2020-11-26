@@ -1,7 +1,8 @@
-package com.assistant.tasks.apiModel;
+package com.assistant.tasks.api.model;
 
 import java.util.ArrayList;
-import com.assistant.tasks.model.Task;
+
+import com.assistant.tasks.data.model.Task;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.assistant.tasks.model;
+package com.assistant.tasks.data.model;
 
 import java.util.Date;
 

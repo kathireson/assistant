@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.assistant.tasks.apiModel.PriorityUpdate;
-import com.assistant.tasks.apiModel.TaskResponse;
-import com.assistant.tasks.apiModel.TaskSummary;
+import com.assistant.tasks.api.model.PriorityUpdate;
+import com.assistant.tasks.api.model.TaskResponse;
+import com.assistant.tasks.api.model.TaskSummary;
 import com.assistant.tasks.data.TaskDao;
-import com.assistant.tasks.model.Task;
-import com.assistant.tasks.model.TaskStatus;
+import com.assistant.tasks.data.model.Task;
+import com.assistant.tasks.data.model.TaskStatus;
 
 @RestController
 public class TaskController {
@@ -40,7 +40,7 @@ public class TaskController {
 		return taskDao.getTask(taskId);
 	}
 	
-	@GetMapping("/task/report") // Not used as of now
+	@GetMapping("/task/report")
 	public List<Task> getTaskReport(@RequestParam("forDate") String forDateStr) throws ParseException{
 		Date forDate = Utils.parseDate(forDateStr);
 		return taskDao.getTasksFromDate(forDate, false);
@@ -71,7 +71,7 @@ public class TaskController {
 		return Utils.convertMapToTaskList(taskMap);
 	}
 
-	@GetMapping("/task")
+	@GetMapping("/task") // not used as of now
 	public List<Task> getTasksWithinTime(@RequestParam("fromDate") String fromDateStr, @RequestParam("toDate") String toDateStr) throws ParseException{
 		Date fromDate = Utils.parseDate(fromDateStr);
 		Date toDate = Utils.parseDate(toDateStr);

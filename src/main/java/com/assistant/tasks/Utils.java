@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
-import com.assistant.tasks.apiModel.TaskSummary;
-import com.assistant.tasks.model.Task;
+import com.assistant.tasks.api.model.TaskSummary;
+import com.assistant.tasks.data.model.Task;
 
 public class Utils {
 
