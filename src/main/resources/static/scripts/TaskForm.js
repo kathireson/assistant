@@ -18,6 +18,7 @@ class TaskForm extends React.Component {
 			description : "",
 			status : "",
 			current : false,
+			tags : "",
 			createdDate : props.date
 		};
 		this.state = props.taskDetail !== undefined ? props.taskDetail : this.defaultTaskDetail;
@@ -37,6 +38,10 @@ class TaskForm extends React.Component {
 	createTask(){
 		var tempRequest = Object.assign({}, this.state);
 		delete tempRequest.id;
+		if(tempRequest.tags){
+			tempRequest.tags = tempRequest.tags.split("|");
+		}
+		
 		fetch("/task", {
 	        "method": "POST",
 	        "headers": {
@@ -53,6 +58,9 @@ class TaskForm extends React.Component {
 	}
 	updateTask(){
 		var tempRequest = Object.assign({}, this.state);
+		if(tempRequest.tags){
+			tempRequest.tags = tempRequest.tags.split("|");
+		}
 		var uri = "/task/" + this.props.taskDetail.id;
 		fetch(uri, {
 	        "method": "PUT",
@@ -154,6 +162,14 @@ class TaskForm extends React.Component {
 				      shrink: true,
 				    }} />
 
+				  <TextField required 
+				  	id="tags"
+				    name="tags"
+				  	label="Tags" 
+				  	variant="outlined" 
+				  	value={this.state.tags} 
+				    onChange={(event => {this.handleChange(event)})}/>
+				  
 				  <div className="formButtons">
 					  <Button variant="contained" color="primary" onClick={() => {this.handleSubmit()}} disableElevation>Submit</Button>
 					  <Button variant="contained" color="secondary" onClick={() => {resetChange()}} disableElevation>Reset</Button>

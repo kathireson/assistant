@@ -36,6 +36,7 @@ class DayContainer extends React.Component{
 				id={t.id}
 				createdDate={this.props.date}
 				updater={this.props.updater}
+				tags={t.tags}
 				index={index} />
 		);
 		return (

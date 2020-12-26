@@ -5,9 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
+import com.assistant.tasks.api.model.TaskDetails;
 import com.assistant.tasks.api.model.TaskSummary;
 import com.assistant.tasks.data.model.Task;
 
@@ -24,7 +27,16 @@ public class Utils {
 		return dateFormat.parse(dateStr);
 	}
 	
-	public static void sortTasksOnPriority(ArrayList<Task> taskList){
+	public static void sortTasksOnPriority(ArrayList<TaskDetails> taskList){
+		taskList.sort(new Comparator<TaskDetails>(){
+			@Override
+			public int compare(TaskDetails o1, TaskDetails o2) {
+				return Long.compare(o1.getPriority(), o2.getPriority());
+			}
+		});
+	}
+	
+	public static void sortDBTasksOnPriority(ArrayList<Task> taskList){
 		taskList.sort(new Comparator<Task>(){
 			@Override
 			public int compare(Task o1, Task o2) {
@@ -33,7 +45,8 @@ public class Utils {
 		});
 	}
 	
-	public static ArrayList<TaskSummary> convertMapToTaskList(TreeMap<String, ArrayList<Task>> map){
+	public static ArrayList<TaskSummary> convertMapToTaskList(TreeMap<String, ArrayList<TaskDetails>> map){
+		// seriously - this need to be cleaned up later
 		ArrayList<TaskSummary> taskSummaryList= new ArrayList<>();
 		map.keySet().stream()
 		.forEach(key ->{

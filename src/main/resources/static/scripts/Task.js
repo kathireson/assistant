@@ -85,7 +85,14 @@ class Task extends React.Component {
 			currentButton = <Button variant="contained" color="primary" onClick={() => this.markDone()} disableElevation>Done</Button>
 		}
 		var currentTask = this.props.current ? "task-current": "task";
-		
+		var tags = " ";
+		var tagString = null;
+		if(this.props.tags){
+			tags = this.props.tags.map( (t, index) =>
+				<div className="taskTag">{t}</div>
+			);
+			tagString = this.props.tags.join("|");
+		}
 		// task to be passed to edit window
 		var taskDetail = {
 				id : this.props.id,
@@ -93,7 +100,8 @@ class Task extends React.Component {
 				description : this.props.description,
 				status : this.props.status,
 				current : this.props.current,
-				createdDate : this.props.createdDate
+				createdDate : this.props.createdDate,
+				tags : tagString
 			};
 		return (
 				<Draggable key={this.props.id} draggableId={this.props.id} index={this.props.index} >
@@ -111,6 +119,9 @@ class Task extends React.Component {
 				        </div>
 				        <div className ="taskDesc"><span>{this.props.description}</span>
 					         {currentButton}
+				        </div>
+				        <div className="taskTagContainer">
+				        	{tags}
 				        </div>
 					      <Modal
 					        open={this.state.editOpen}
