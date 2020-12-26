@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +20,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.assistant.tasks.apiModel.PriorityUpdate;
-import com.assistant.tasks.apiModel.TaskResponse;
-import com.assistant.tasks.apiModel.TaskSummary;
+import com.assistant.tasks.api.model.PriorityUpdate;
+import com.assistant.tasks.api.model.TaskDetails;
+import com.assistant.tasks.api.model.TaskResponse;
+import com.assistant.tasks.api.model.TaskSummary;
 import com.assistant.tasks.data.TaskDao;
-import com.assistant.tasks.model.Task;
-import com.assistant.tasks.model.TaskStatus;
+import com.assistant.tasks.data.model.Task;
+import com.assistant.tasks.data.model.TaskStatus;
 
 @RestController
 public class TaskController {
@@ -36,33 +38,35 @@ public class TaskController {
 	TaskDao taskDao;
 	
 	@GetMapping("/task/{taskId}") // Not used as of now
-	public Task getTaskDetails(@PathVariable("taskId") String taskId){
-		return taskDao.getTask(taskId);
+	public TaskDetails getTaskDetails(@PathVariable("taskId") String taskId){
+		return new TaskDetails(taskDao.getTask(taskId));
 	}
 	
-	@GetMapping("/task/report") // Not used as of now
-	public List<Task> getTaskReport(@RequestParam("forDate") String forDateStr) throws ParseException{
+	@GetMapping("/task/report")
+	public List<TaskDetails> getTaskReport(@RequestParam("forDate") String forDateStr) throws ParseException{
 		Date forDate = Utils.parseDate(forDateStr);
-		return taskDao.getTasksFromDate(forDate, false);
+		return taskDao.getTasksFromDate(forDate, false).stream()
+				.map(task -> new TaskDetails(task))
+				.collect(Collectors.toList());
 	}
 	
 	@GetMapping("/tasks")
 	public List<TaskSummary> getAllPendingTasks(){
-		TreeMap<String, ArrayList<Task>> taskMap = new TreeMap<>();
+		TreeMap<String, ArrayList<TaskDetails>> taskMap = new TreeMap<>();
 		taskDao.getNotDoneTasks()
 			.stream().forEach(t -> {
 				String strDate = Utils.formatDate(t.getCreatedDate());
 				if(taskMap.containsKey(strDate)){
-					taskMap.get(strDate).add(t);
+					taskMap.get(strDate).add(new TaskDetails(t));
 				}else{
-					taskMap.put(strDate,new ArrayList<Task>(Arrays.<Task>asList(t)));
+					taskMap.put(strDate,new ArrayList<TaskDetails>(Arrays.<TaskDetails>asList(new TaskDetails(t))));
 				}
 			});
 		// if current date is not in the map
 		// add current date too with empty task list
 		String currentDate = Utils.formatDate(new Date());
 		if(!taskMap.containsKey(currentDate)){
-			taskMap.put(currentDate, new ArrayList<Task>());
+			taskMap.put(currentDate, new ArrayList<TaskDetails>());
 		}
 		// sort tasks based on priority for each date
 		taskMap.forEach((date, taskList) -> {
@@ -71,17 +75,20 @@ public class TaskController {
 		return Utils.convertMapToTaskList(taskMap);
 	}
 
-	@GetMapping("/task")
-	public List<Task> getTasksWithinTime(@RequestParam("fromDate") String fromDateStr, @RequestParam("toDate") String toDateStr) throws ParseException{
+	@GetMapping("/task") // not used as of now
+	public List<TaskDetails> getTasksWithinTime(@RequestParam("fromDate") String fromDateStr, @RequestParam("toDate") String toDateStr) throws ParseException{
 		Date fromDate = Utils.parseDate(fromDateStr);
 		Date toDate = Utils.parseDate(toDateStr);
 		
-		System.out.println("fromDate " + fromDate + ",toDate : " + toDate);
-		return taskDao.getTasks(fromDate, toDate);
+		logger.info("fromDate " + fromDate + ",toDate : " + toDate);
+		return taskDao.getTasks(fromDate, toDate).stream()
+				.map(TaskDetails::new)
+				.collect(Collectors.toList());
 	}
 	
 	@PostMapping("/task")
-	public TaskResponse createTask(@RequestBody Task task){
+	public TaskResponse createTask(@RequestBody TaskDetails task){
+
 		Date currentTime = new Date();
 		// if created time is not there - add it
 		if(task.getCreatedDate() == null){
@@ -91,7 +98,7 @@ public class TaskController {
 		
 		updatePriority(task);
 		
-		TaskResponse response = new TaskResponse(taskDao.createTask(task));
+		TaskResponse response = new TaskResponse(taskDao.createTask(task.toDBModel()));
 		
 		// update if this is current job
 		if(task.isCurrent() && !TaskStatus.DONE.equals(task.getStatus())){
@@ -102,31 +109,31 @@ public class TaskController {
 	}
 	
 	@PutMapping("/task/{taskId}")
-	public void updateTask(@PathVariable("taskId") String taskId, @RequestBody Task task){
+	public void updateTask(@PathVariable("taskId") String taskId, @RequestBody TaskDetails taskDetails){
 		Date currentTime = new Date();
-		task.setUpdatedTime(currentTime.getTime());
-		if(task.getCreatedDate() == null){
-			task.setCreatedDate(currentTime);
+		taskDetails.setUpdatedTime(currentTime.getTime());
+		if(taskDetails.getCreatedDate() == null){
+			taskDetails.setCreatedDate(currentTime);
 		}
 		// if date changed during update 
 		// or - set priority to minimum
 		Task oldTask = taskDao.getTask(taskId);
-		if(task.getPriority() == null || (oldTask != null && !oldTask.getCreatedDate().equals(task.getCreatedDate()))){
-			updatePriority(task);
+		if(taskDetails.getPriority() == null || (oldTask != null && !oldTask.getCreatedDate().equals(taskDetails.getCreatedDate()))){
+			updatePriority(taskDetails);
 		}
-		taskDao.updateTask(taskId, task);
+		taskDao.updateTask(taskId, taskDetails.toDBModel());
 		// update if this is current job
-		if(task.isCurrent() && !TaskStatus.DONE.equals(task.getStatus())){
+		if(taskDetails.isCurrent() && !TaskStatus.DONE.equals(taskDetails.getStatus())){
 			taskDao.markAsCurrent(taskId);
 		}
 	}
 
-	private void updatePriority(Task task) {
-		Long minPriority = taskDao.getMinPriorityInDate(task.getCreatedDate());
+	private void updatePriority(TaskDetails taskDetails) {
+		Long minPriority = taskDao.getMinPriorityInDate(taskDetails.getCreatedDate());
 		if(minPriority != null){
-			task.setPriority(minPriority + PRIORITY_INTERVAL);
+			taskDetails.setPriority(minPriority + PRIORITY_INTERVAL);
 		} else {
-			task.setPriority(0L);
+			taskDetails.setPriority(0L);
 		}
 	}
 
@@ -154,7 +161,7 @@ public class TaskController {
 
 				// set priority of current task to a value between the two queried earlier
 				ArrayList<Task> dayTasks = new ArrayList<Task>(taskList);
-				Utils.sortTasksOnPriority(dayTasks);
+				Utils.sortDBTasksOnPriority(dayTasks);
 				if(desiredIndex >= (dayTasks.size() - 1)){
 
 					task.setPriority(dayTasks.get(dayTasks.size()-1).getPriority() + PRIORITY_INTERVAL);
@@ -202,15 +209,15 @@ public class TaskController {
 			taskDao.updateTask(task.getId(), task);
 		}
 	}
-	
-	private int getCurrentIndex(List<Task> taskList, Task current){
-		for(int i = 0; i < taskList.size(); i++){
-			if(taskList.get(i).getId().equals(current.getId())){
-				return i;
-			}
-		}
-		return -1;
-	}
+
+    private int getCurrentIndex(List<Task> taskList, Task current){
+        for(int i = 0; i < taskList.size(); i++){
+                if(taskList.get(i).getId().equals(current.getId())){
+                        return i;
+                }
+        }
+        return -1;
+    }
 	
 	@PostMapping("task/{taskId}/current")
 	public void makeCurrent(@PathVariable("taskId") String taskId){
@@ -227,7 +234,7 @@ public class TaskController {
 	}
 	
 	@PostMapping("task/maxPriority")
-	public String getMaxPriority(@RequestBody Task task){
-		return String.valueOf(taskDao.getMinPriorityInDate(task.getCreatedDate()));
+	public String getMaxPriority(@RequestBody TaskDetails taskDetails){
+		return String.valueOf(taskDao.getMinPriorityInDate(taskDetails.getCreatedDate()));
 	}
 }

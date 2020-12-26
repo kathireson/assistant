@@ -144,3 +144,15 @@
      font-family: 'Roboto', sans-serif;
      font-size: 15px;
  }
+ 
+ .taskTagContainer {
+ 	display:flex;
+ 	font-weight: 300;
+ }
+ .taskTag {
+ 	margin: 0px 3px;
+ 	padding: 2px 5px;
+ 	background-color: #326cab;
+ 	border-radius: 5px;
+ 	color: white;
+ }

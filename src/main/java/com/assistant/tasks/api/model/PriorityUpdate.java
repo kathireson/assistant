@@ -1,4 +1,4 @@
-package com.assistant.tasks.apiModel;
+package com.assistant.tasks.api.model;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -10,8 +10,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Component;
 
-import com.assistant.tasks.model.Task;
-import com.assistant.tasks.model.TaskStatus;
+import com.assistant.tasks.data.model.Task;
+import com.assistant.tasks.data.model.TaskStatus;
 
 @Component
 public class TaskDao {
