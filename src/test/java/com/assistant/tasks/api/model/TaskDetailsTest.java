@@ -7,6 +7,7 @@ import java.util.Date;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.assistant.tasks.Utils;
 import com.assistant.tasks.data.model.Task;
 import com.assistant.tasks.data.model.TaskStatus;
 
@@ -21,7 +22,7 @@ public class TaskDetailsTest {
 		TaskDetails details = new TaskDetails(task);	
 		Assert.assertEquals(details.getId(), task.getId());
 		Assert.assertEquals(details.getTitle(), task.getTitle());
-		Assert.assertEquals(details.getCreatedDate(), task.getCreatedDate());
+		Assert.assertEquals(details.getCreatedDate(), Utils.formatDate(task.getCreatedDate()));
 		Assert.assertEquals(details.getUpdatedTime(), task.getUpdatedTime());
 		Assert.assertEquals(details.getPriority(), task.getPriority());
 		Assert.assertEquals(details.isCurrent(), task.isCurrent());
@@ -61,7 +62,7 @@ public class TaskDetailsTest {
 		Task task = details.toDBModel();
 		Assert.assertEquals(details.getId(), task.getId());
 		Assert.assertEquals(details.getTitle(), task.getTitle());
-		Assert.assertEquals(details.getCreatedDate(), task.getCreatedDate());
+		Assert.assertEquals(details.getCreatedDate(), Utils.formatDate(task.getCreatedDate()));
 		Assert.assertEquals(details.getUpdatedTime(), task.getUpdatedTime());
 		Assert.assertEquals(details.getPriority(), task.getPriority());
 		Assert.assertEquals(details.isCurrent(), task.isCurrent());

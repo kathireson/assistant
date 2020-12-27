@@ -41,7 +41,10 @@ class TaskForm extends React.Component {
 		if(tempRequest.tags){
 			tempRequest.tags = tempRequest.tags.split("|");
 		}
-		
+		if(tempRequest.tags === ""){
+			delete tempRequest.tags;
+		}
+		console.log(tempRequest);
 		fetch("/task", {
 	        "method": "POST",
 	        "headers": {
@@ -60,6 +63,9 @@ class TaskForm extends React.Component {
 		var tempRequest = Object.assign({}, this.state);
 		if(tempRequest.tags){
 			tempRequest.tags = tempRequest.tags.split("|");
+		}
+		if(tempRequest.tags === ""){
+			delete tempRequest.tags;
 		}
 		var uri = "/task/" + this.props.taskDetail.id;
 		fetch(uri, {
