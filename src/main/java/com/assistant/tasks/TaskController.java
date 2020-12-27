@@ -92,7 +92,7 @@ public class TaskController {
 		Date currentTime = new Date();
 		// if created time is not there - add it
 		if(task.getCreatedDate() == null){
-			task.setCreatedDate(currentTime);
+			task.setCreatedDate(Utils.formatDate(currentTime));
 		}
 		task.setUpdatedTime(currentTime.getTime());
 		
@@ -113,7 +113,7 @@ public class TaskController {
 		Date currentTime = new Date();
 		taskDetails.setUpdatedTime(currentTime.getTime());
 		if(taskDetails.getCreatedDate() == null){
-			taskDetails.setCreatedDate(currentTime);
+			taskDetails.setCreatedDate(Utils.formatDate(currentTime));
 		}
 		// if date changed during update 
 		// or - set priority to minimum
@@ -129,7 +129,7 @@ public class TaskController {
 	}
 
 	private void updatePriority(TaskDetails taskDetails) {
-		Long minPriority = taskDao.getMinPriorityInDate(taskDetails.getCreatedDate());
+		Long minPriority = taskDao.getMinPriorityInDate(Utils.parseDate(taskDetails.getCreatedDate()));
 		if(minPriority != null){
 			taskDetails.setPriority(minPriority + PRIORITY_INTERVAL);
 		} else {
@@ -235,6 +235,6 @@ public class TaskController {
 	
 	@PostMapping("task/maxPriority")
 	public String getMaxPriority(@RequestBody TaskDetails taskDetails){
-		return String.valueOf(taskDao.getMinPriorityInDate(taskDetails.getCreatedDate()));
+		return String.valueOf(taskDao.getMinPriorityInDate(Utils.parseDate(taskDetails.getCreatedDate())));
 	}
 }
